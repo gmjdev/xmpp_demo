@@ -27,6 +27,6 @@ class B extends A {
   @Override
   void method() throws RuntimeException {}
 
-  @Override
-  void method1() throws Exception {}
+//  @Override
+//  void method1() throws Exception {}
 }
