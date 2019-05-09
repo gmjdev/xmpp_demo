@@ -1,10 +1,8 @@
 package com.gm.apps.demo.xmpp.config;
 
 import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.igniterealtime.restclient.RestApiClient;
@@ -16,9 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
-
 import com.gm.apps.demo.xmpp.core.services.ChatGroupService;
 import com.gm.apps.demo.xmpp.core.services.ChatRoomService;
 import com.gm.apps.demo.xmpp.core.services.ChatUserService;
@@ -26,7 +22,7 @@ import com.gm.apps.demo.xmpp.core.services.impl.ChatGroupServiceImpl;
 import com.gm.apps.demo.xmpp.core.services.impl.ChatRoomServiceImpl;
 import com.gm.apps.demo.xmpp.core.services.impl.ChatUserServiceImpl;
 
-@Configuration
+// @Configuration
 public class XmppConnectionServiceConfig {
   @Value("${xmpp.user.username}")
   private String xmppUser;

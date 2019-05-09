@@ -18,7 +18,7 @@
  * @Date May 5, 2019
  ******************************************************************************/
 
-package com.gm.apps.security.core.oauth2;
+package com.gm.apps.security.core.oauth2.user;
 
 import java.util.Map;
 

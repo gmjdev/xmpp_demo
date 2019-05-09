@@ -7,9 +7,8 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+// @Configuration
 public class XmppConfig {
 	@Value("${xmpp.user.username}")
 	private String xmppUser;
@@ -27,7 +26,7 @@ public class XmppConfig {
 	// @formatter:off
     return XMPPTCPConnectionConfiguration.builder()
         .setXmppDomain(xmppDomain)
-        .setCompressionEnabled(true)        
+        .setCompressionEnabled(true)
         .setSecurityMode(SecurityMode.disabled)
         .setHost(xmppHost)
         .build();

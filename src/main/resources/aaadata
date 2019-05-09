@@ -1,0 +1,2 @@
+-- insert into USERS values(1,'girish.mahajan@gslab.com', 1, '','Girish Mahajan','Welcome1','GMAIL', 1);
+-- insert into USERS values(2,'mahajan5@avaya.com', 1, '','Girish Mahajan','Welcome1','Knowmail', 2);
