@@ -17,6 +17,7 @@ import lombok.Setter;
 public class UserSession extends BaseEntity<Long> {
   @ManyToOne
   private User user;
+  @Column(length = 512, nullable = false)
   private String token;
   private byte tokenType;
   @Temporal(TemporalType.TIMESTAMP)

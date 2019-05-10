@@ -1,8 +1,13 @@
 package com.gm.apps.security.core.oauth2.user;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class BasicOAuth2UserInfo extends OAuth2UserInfo {
+
+  public BasicOAuth2UserInfo() {
+    super(Collections.emptyMap());
+  }
 
   public BasicOAuth2UserInfo(Map<String, Object> attributes) {
     super(attributes);

@@ -110,6 +110,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
           .formLogin().disable()
           .httpBasic().disable()
         .exceptionHandling()
+        .accessDeniedHandler((req,res,err)->{
+          LOGGER.info("Access denied entry point...");
+          res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        })
         .authenticationEntryPoint((request,response,err) -> {
           LOGGER.info("Authentication entry point...");
           response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

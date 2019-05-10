@@ -21,7 +21,17 @@ package com.gm.apps.security.core.authentication;
 import java.util.stream.Stream;
 
 public enum AuthProvider {
-  CUSTOM, LOCAL, FACEBOOK, GOOGLE, GITHUB, KNOWMAIL;
+  CUSTOM(-1), LOCAL(0), GOOGLE(1), GITHUB(2), KNOWMAIL(3), FACEBOOK(4);
+
+  private final int value;
+
+  private AuthProvider(int value) {
+    this.value = value;
+  }
+
+  public int getValue() {
+    return value;
+  }
 
   public static AuthProvider fromValue(String provider) {
     return Stream.of(values()).filter(s -> provider.equalsIgnoreCase(s.name())).findFirst().orElse(CUSTOM);

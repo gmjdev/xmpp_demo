@@ -41,5 +41,4 @@ public class JwtAutoConfiguration {
       UserDetailsService userDetailsService) {
     return new JwtAuthenticationProvider(jwtTokenService, userDetailsService);
   }
-
 }

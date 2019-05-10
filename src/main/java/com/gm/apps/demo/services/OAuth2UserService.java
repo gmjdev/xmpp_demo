@@ -33,17 +33,20 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import com.gm.apps.security.core.authentication.AuthProvider;
 import com.gm.apps.security.core.authentication.AuthUserPrincipal;
 import com.gm.apps.security.core.dto.UserDto;
+import com.gm.apps.security.core.jwt.JwtUtil;
 import com.gm.apps.security.core.oauth2.user.BasicOAuth2UserInfo;
 import com.gm.apps.security.core.oauth2.user.OAuth2UserInfo;
 import com.gm.apps.security.data.entities.User;
 import com.gm.apps.security.data.entities.UserSession;
 import com.gm.apps.security.data.service.UserService;
 import com.gm.apps.security.data.service.UserSessionService;
+import com.gm.apps.security.knowmail.oauth2.user.KnowmailOAuth2UserInfo;
 
 public class OAuth2UserService extends DefaultOAuth2UserService {
   private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2UserService.class);
@@ -59,6 +62,15 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
   @Override
   public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) {
     LOGGER.debug("Loading oauth2 user...");
+    String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
+    AuthProvider provider = AuthProvider.fromValue(registrationId);
+
+    if (AuthProvider.KNOWMAIL == provider || provider == AuthProvider.CUSTOM) {
+      // throw new IllegalArgumentException("Illlllllllllll");
+      return processCustomOAuth2Provider(oAuth2UserRequest);
+    }
+
+    // default OAuth2 client implementation
     OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
     try {
       OAuth2UserInfo oAuth2UserInfo = BasicOAuth2UserInfo.userFromAttributes(oAuth2User.getAttributes());
@@ -70,6 +82,16 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     } catch (Exception ex) {
       throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
     }
+  }
+
+  private OAuth2User processCustomOAuth2Provider(OAuth2UserRequest oAuth2UserRequest) {
+    Assert.notNull(oAuth2UserRequest, "userRequest cannot be null");
+    JwtUtil.DecodedJwtInfo decodedJwt = JwtUtil.decodeJwtToken(oAuth2UserRequest.getAccessToken().getTokenValue());
+    KnowmailOAuth2UserInfo knowmailOAuth2UserInfo =
+        new KnowmailOAuth2UserInfo(decodedJwt.getUniqueName(), decodedJwt.getAttributes());
+    AuthUserPrincipal<Long> principal = buildPrincipal(knowmailOAuth2UserInfo, oAuth2UserRequest);
+    principal.setAttributes(knowmailOAuth2UserInfo.getAttributes());
+    return principal;
   }
 
   /**
@@ -156,19 +178,21 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
   private User createOrGetUser(String registrationId, String email, OAuth2AccessToken accessToken,
       OAuth2UserInfo oAuth2UserInfo) {
     return userService.findByEmail(email).orElseGet(() -> {
+      AuthProvider provider = AuthProvider.fromValue(registrationId);
       LOGGER.info("User does not exists with email: {} creating new user", email);
       // register a new user
       User newUser = new User();
       newUser.setImageUrl(oAuth2UserInfo.getImageUrl());
       newUser.setEmail(email);
       newUser.setName(oAuth2UserInfo.getName());
-      newUser.setProvider(AuthProvider.fromValue(registrationId));
+      newUser.setProvider(provider);
       newUser.setProviderId(registrationId);
       newUser.setPassPhrase(passwordEncoder.encode(UUID.randomUUID().toString()));
 
       UserSession userSession = new UserSession();
       userSession.setTokenIssuedAt(java.util.Date.from(accessToken.getIssuedAt()));
       userSession.setToken(accessToken.getTokenValue());
+      userSession.setTokenType((byte) provider.getValue());
       newUser.addSession(userSession);
       return userService.createUser(newUser);
     });
